@@ -1,0 +1,29 @@
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local folder = workspace:FindFirstChild("ActiveZombies")
+
+-- 检查文件夹是否存在
+if not folder then
+    warn("未找到 ActiveZombies 文件夹！")
+    return
+end
+
+-- 使用 Heartbeat 确保每一帧都进行传送，且不卡顿
+local connection
+connection = RunService.Heartbeat:Connect(function()
+    local character = player.Character
+    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+    
+    if rootPart then
+        for _, zombie in ipairs(folder:GetChildren()) do
+            if zombie:IsA("Model") and zombie:FindFirstChild("HumanoidRootPart") then
+                -- 将僵尸传送到玩家前方 3 格
+                zombie:PivotTo(rootPart.CFrame * CFrame.new(0, 0, -3))
+            end
+        end
+    else
+        -- 如果玩家死亡，停止脚本（可选）
+        -- connection:Disconnect()
+    end
+end)
